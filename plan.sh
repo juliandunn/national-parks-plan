@@ -5,10 +5,10 @@ pkg_version=0.1.3
 pkg_maintainer="Bill Meyer <bill@chef.io>"
 pkg_license=('Apache-2.0')
 pkg_source=https://github.com/billmeyer/national-parks
-pkg_deps=(core/tomcat8 billmeyer/mongodb)
+pkg_deps=(core/tomcat8 jdunn/mongo-tools)
 pkg_build_deps=(core/git core/maven)
 pkg_expose=(8080)
-pkg_svc_user="root"
+pkg_svc_user="hab"
 
 # Override do_download() to pull our source code from GitHub instead
 # of downloading a tarball from a URL.
@@ -27,7 +27,7 @@ do_download()
 
     mkdir ${pkg_dirname}
     cd ${pkg_dirname}
-    GIT_SSL_NO_VERIFY=true git clone --branch v${pkg_version} https://github.com/billmeyer/national-parks.git
+    GIT_SSL_NO_VERIFY=true git clone --branch v${pkg_version} ${pkg_source}
     return 0
 }
 
