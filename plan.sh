@@ -14,11 +14,7 @@ pkg_svc_user="hab"
 # of downloading a tarball from a URL.
 do_download()
 {
-    build_line "do_download() =================================================="
     cd ${HAB_CACHE_SRC_PATH}
-
-    build_line "\$pkg_dirname=${pkg_dirname}"
-    build_line "\$pkg_filename=${pkg_filename}"
 
     if [ -d "${pkg_dirname}" ];
     then
@@ -27,14 +23,7 @@ do_download()
 
     mkdir ${pkg_dirname}
     cd ${pkg_dirname}
-    GIT_SSL_NO_VERIFY=true git clone --branch v${pkg_version} ${pkg_source}
-    return 0
-}
-
-do_clean()
-{
-    build_line "do_clean() ===================================================="
-    return 0
+    git clone --branch v${pkg_version} ${pkg_source}
 }
 
 do_unpack()
@@ -45,8 +34,6 @@ do_unpack()
 
 do_build()
 {
-    build_line "do_build() ===================================================="
-
     # Maven requires JAVA_HOME to be set, and can be set via:
     export JAVA_HOME=$(hab pkg path core/jdk8)
 
@@ -64,17 +51,16 @@ do_install()
     # in the package.
 
     local source_dir="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/${pkg_filename}"
-    local webapps_dir="$(hab pkg path core/tomcat8)/tc/webapps"
+    local webapps_dir="$(pkg_path_for core/tomcat8)/tc/webapps"
     cp ${source_dir}/target/${pkg_filename}.war ${webapps_dir}/
 
     # Copy our seed data so that it can be loaded into Mongo using our init hook
-    cp ${source_dir}/national-parks.json $(hab pkg path ${pkg_origin}/national-parks)/
+    cp ${source_dir}/national-parks.json /hab/pkgs/${pkg_origin}/${pkg_name}/${pkg_version}/${pkg_release}
 }
 
 # We verify our own source code because we cloned from GitHub instead of
 # providing a SHA-SUM of a tarball
 do_verify()
 {
-    build_line "do_verify() ==================================================="
     return 0
 }
